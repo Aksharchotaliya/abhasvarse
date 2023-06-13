@@ -308,6 +308,8 @@ const quizData = [
 ];
 
 let currentQuestion = 0;
+let score = 0;
+let selectedAnswers = [];
 
 function loadQuestion() {
   const currentQuiz = quizData[currentQuestion];
@@ -324,30 +326,36 @@ function loadQuestion() {
 
 function showResults() {
   quizContainer.innerHTML = `<h2>You've completed the quiz!</h2>
-                             <p>Your score: ${calculateScore()} out of ${quizData.length}</p>`;
+                             <p>Your score: ${score} out of ${quizData.length}</p>`;
 }
 
 function calculateScore() {
-  let score = 0;
-  const selectedAnswer = document.querySelector('input[name="answer"]:checked');
-  if (selectedAnswer && selectedAnswer.value === quizData[currentQuestion].answer) {
+  const correctAnswer = quizData[currentQuestion].answer;
+  const selectedAnswer = selectedAnswers[currentQuestion];
+
+  if (selectedAnswer === correctAnswer) {
     score++;
   }
-  return score;
 }
 
-loadQuestion();
-
-submitButton.addEventListener('click', () => {
+function submitAnswer() {
   const selectedAnswer = document.querySelector('input[name="answer"]:checked');
   if (!selectedAnswer) {
     return;
   }
 
-  if (currentQuestion < quizData.length - 1) {
+  selectedAnswers[currentQuestion] = selectedAnswer.value;
+
+  if (currentQuestion < 4) { // Change '4' to the number of questions you want to render
+    calculateScore();
     currentQuestion++;
     loadQuestion();
   } else {
+    calculateScore();
     showResults();
   }
-});
+}
+
+loadQuestion();
+
+submitButton.addEventListener('click', submitAnswer);
