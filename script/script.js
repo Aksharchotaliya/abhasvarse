@@ -305,57 +305,51 @@ const quizData = [
         options: ['MySQL', 'Oracle', 'SQLite'],
         answer: 'MySQL'
       }
-];
+    
+  ];
+  
+  let currentQuestion = 0;
 
-let currentQuestion = 0;
-let score = 0;
-let selectedAnswers = [];
-
-function loadQuestion() {
-  const currentQuiz = quizData[currentQuestion];
-
-  questionContainer.innerText = currentQuiz.question;
-  optionsContainer.innerHTML = '';
-
-  currentQuiz.options.forEach((option, index) => {
-    const optionElement = document.createElement('label');
-    optionElement.innerHTML = `<input type="radio" name="answer" value="${option}">${option}`;
-    optionsContainer.appendChild(optionElement);
+  function loadQuestion() {
+    const currentQuiz = quizData[currentQuestion];
+  
+    questionContainer.innerText = currentQuiz.question;
+    optionsContainer.innerHTML = '';
+  
+    currentQuiz.options.forEach((option, index) => {
+      const optionElement = document.createElement('label');
+      optionElement.innerHTML = `<input type="radio" name="answer" value="${option}">${option}`;
+      optionsContainer.appendChild(optionElement);
+    });
+  }
+  
+  function showResults() {
+    quizContainer.innerHTML = `<h2>You've completed the quiz!</h2>
+                               <p>Your score: ${calculateScore()} out of 5 (There are more up to ${quizData.length} Questions)</p>`;
+  }
+  
+  function calculateScore() {
+    let score = 0;
+    const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+    if (selectedAnswer && selectedAnswer.value === quizData[currentQuestion].answer) {
+      score++;
+    }
+    return score;
+  }
+  
+  loadQuestion();
+  
+  submitButton.addEventListener('click', () => {
+    const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+    if (!selectedAnswer) {
+      return;
+    }
+  
+    if (currentQuestion < 4) { // Change '4' to the number of questions you want to render
+      currentQuestion++;
+      loadQuestion();
+    } else {
+      showResults();
+    }
   });
-}
-
-function showResults() {
-  quizContainer.innerHTML = `<h2>You've completed the quiz!</h2>
-                             <p>Your score: ${score} out of ${quizData.length}</p>`;
-}
-
-function calculateScore() {
-  const correctAnswer = quizData[currentQuestion].answer;
-  const selectedAnswer = selectedAnswers[currentQuestion];
-
-  if (selectedAnswer === correctAnswer) {
-    score++;
-  }
-}
-
-function submitAnswer() {
-  const selectedAnswer = document.querySelector('input[name="answer"]:checked');
-  if (!selectedAnswer) {
-    return;
-  }
-
-  selectedAnswers[currentQuestion] = selectedAnswer.value;
-
-  if (currentQuestion < 4) { // Change '4' to the number of questions you want to render
-    calculateScore();
-    currentQuestion++;
-    loadQuestion();
-  } else {
-    calculateScore();
-    showResults();
-  }
-}
-
-loadQuestion();
-
-submitButton.addEventListener('click', submitAnswer);
+  
